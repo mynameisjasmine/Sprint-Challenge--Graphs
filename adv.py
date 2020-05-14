@@ -9,8 +9,8 @@ from ast import literal_eval
 world = World()
 
 
-# You may uncomment the smaller graphs for development and testing purposes.
-# map_file = "maps/test_line.txt"
+# You may uncomment the smaller graphs for development and testing purposes. 
+# map_file = "maps/test_line.txt"   shortest test
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
