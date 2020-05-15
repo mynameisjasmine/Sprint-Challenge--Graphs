@@ -26,10 +26,7 @@ world.print_rooms()
 player = Player(world.starting_room)
 
 
-#helper function to loop over the exits
-def exits_looper(exits):
-    #loop through the available exits
-    for i in exits:
+
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
