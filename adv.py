@@ -25,9 +25,93 @@ world.print_rooms()
 
 player = Player(world.starting_room)
 
+
+#helper function to loop over the exits
+def exits_looper(exits):
+    #loop through the available exits
+    for i in exits:
+
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+
+#keeps track of the directions
 traversal_path = []
+#the previous room the player was in
+previous_room = [] # while previous is > 0
+
+#the player's current room
+current = []
+# rooms that have been visited
+visited = {}
+#create opposite directions dict for the stack if I need to back up
+opposite = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'} # access the values for the stack
+
+#add the player's current room to the visited dictionary as a key
+visited[player.current_room.id] = player.current_room.get_exits()
+path = []
+
+while len(visited) < len(room_graph):
+
+    if player.current_room.id not in visited:
+        visited[player.current_room.id] = player.current_room.get_exits()
+
+
+    #move around map
+    #If there are exits available
+    while len(player.get_exits()) > 0:
+
+    #choose a random available direction to travel in
+        
+        #save the available random directions in a variable
+        random_move = random.choice(player.current_room.get_exits())
+        player.travel(random_move)
+        
+        #add the direction moved in to the "path" array
+        path.append(random_move)
+
+        #add the direction moved in to the "traversal_path" array
+        traversal_path.append(random_move)
+        
+        #store the current room id in a variable
+        current_room_id = player.current_room.id
+        
+        #add the current room id to the "current" array
+        current.append(current_room_id)
+        
+        if len(path) > 1
+        #store previous room's id in a variable
+
+        #add the previous room id to the "previous" array
+
+        
+
+        
+        
+
+
+    #If we are reach a dead-end
+    if len(player.get_exits()) > 0:
+        #backtrack through the maze by using the "traversal_path" route as a stack and switch the direction to opposite
+
+
+    #add the directions to the 'traversal_path array'
+
+
+    #get the available exits
+
+
+
+
+    #add the player's current room to the 'current' array
+    current.append(player.current_room.id)
+
+    #loop over the exits
+
+
+
+
+    #While loop
+    player.current_room.id
 
 
 
