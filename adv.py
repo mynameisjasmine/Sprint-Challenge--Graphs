@@ -26,6 +26,22 @@ world.print_rooms()
 player = Player(world.starting_room)
 
 
+#helper to reverse directions
+def backtrack(direction):
+  opposite = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+  if direction == 'n':
+    return opposite['n']
+  
+  elif direction == 's':
+    return opposite['s']
+  
+  elif direction == 'e':
+    return opposite['e']
+  
+  elif direction == 'w':
+    return opposite['w']
+ 
 
 
 # Fill this out with directions to walk
@@ -41,10 +57,12 @@ current = []
 # rooms that have been visited
 visited = {}
 #create opposite directions dict for the stack if I need to back up
-opposite = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'} # access the values for the stack
+# opposite = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'} # access the values for the stack ( ie  opposite['n'] )
 
 #add the player's current room to the visited dictionary as a key
 visited[player.current_room.id] = player.current_room.get_exits()
+
+#this array will keep the traversal path directions and use them in a stack to go backwards if we hit a dead end
 path = []
 
 while len(visited) < len(room_graph):
@@ -55,7 +73,8 @@ while len(visited) < len(room_graph):
 
     #move around map
     #If there are exits available
-    while len(player.get_exits()) > 0:
+    '''while there are available exits'''
+    while len(player.current_room.get_exits()) > 0:
 
     #choose a random available direction to travel in
         
@@ -75,8 +94,15 @@ while len(visited) < len(room_graph):
         #add the current room id to the "current" array
         current.append(current_room_id)
         
-        if len(path) > 1
+    
+        '''#Can I update here to add the id to the visited array as a value to the direction key? Can I use something else?'''
+        
+        
+        # if len(path) > 1:
         #store previous room's id in a variable
+        
+        #Move one step back in the array to store the previous room's id
+        
 
         #add the previous room id to the "previous" array
 
@@ -85,10 +111,23 @@ while len(visited) < len(room_graph):
         
         
 
-
+    '''#Escaping the previous while loop (while there are exits available)...is this indentation correct for escape?''' 
     #If we are reach a dead-end
-    if len(player.get_exits()) > 0:
-        #backtrack through the maze by using the "traversal_path" route as a stack and switch the direction to opposite
+    if len(player.current_room.get_exits()) < 0:
+    #backtrack through the maze by using the "path" route as a stack and switch the direction to opposite
+        
+        #get the route from the "path" array
+        while len(path) > 0:
+            #store the the last element removed from path array in a variable
+            removed = path.pop()
+            #add directions to traversal path array
+            traversal_path.append(removed)
+            # use the backtrack method here by storing in a variable
+            reverse_dir = backtrack(removed)
+            #move in the new opposite direction
+            player.travel(reverse_dir)
+
+        #
 
 
     #add the directions to the 'traversal_path array'
