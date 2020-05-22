@@ -9,8 +9,8 @@ from ast import literal_eval
 world = World()
 
 
-# You may uncomment the smaller graphs for development and testing purposes. 
-# map_file = "maps/test_line.txt"   shortest test
+# You may uncomment the smaller graphs for development and testing purposes.
+# map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
@@ -18,6 +18,13 @@ map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
+
+rooms = {}
+for i in room_graph:
+    rooms[i] = room_graph[i][1]
+print(rooms)
+
+
 world.load_graph(room_graph)
 
 # Print an ASCII map
@@ -25,153 +32,41 @@ world.print_rooms()
 
 player = Player(world.starting_room)
 
-
-#helper to reverse directions
-def backtrack(direction):
-  opposite = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
-
-  if direction == 'n':
-    return opposite['n']
-  
-  elif direction == 's':
-    return opposite['s']
-  
-  elif direction == 'e':
-    return opposite['e']
-  
-  elif direction == 'w':
-    return opposite['w']
- 
-
-
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-
-#keeps track of the directions
 traversal_path = []
-#the previous rooms the player has been in
-previous_rooms = [] 
-
-
-# rooms that have been visited
 visited = {}
-#create opposite directions dict for the stack if I need to back up
-# opposite = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'} # access the values for the stack ( ie  opposite['n'] )
+ 
 
-#change the get_exits array to a dictionary with '?' values
-exits = player.current_room.get_exits()
-new_exits = {i: '?' for i in exits}
+backtrack = []
+opposite = {'n': 's', 's': 'n', 'w': 'e', 'e': 'w'}
 
-#add the player's current room to the visited dictionary as a key
-visited[player.current_room.id] = new_exits
-# visited[player.current_room.id] = player.current_room.get_exits()
+visited[player.current_room.id] = player.current_room.get_exits()
 
 
-#this array will keep the traversal path directions and use them in a stack to go backwards if we hit a dead end
-path = []
-
-#count and total for the check to see if there are unvisited rooms
-count = 0
-total = 0
-
-
-
-
-
-while len(visited) < len(room_graph):
-    
+while len(visited) < len(room_graph)-1:
     if player.current_room.id not in visited:
-        visited[player.current_room.id] = new_exits.copy()
+        
+        visited[player.current_room.id] = player.current_room.get_exits()
+        visited[player.current_room.id].remove(backtrack[-1])
 
+    while len(visited[player.current_room.id]) == 0:
+        removed = backtrack.pop()
+        traversal_path.append(removed)
+        player.travel(removed)
 
-    #move around map
-    #If there are exits available
-    '''while there are available exits'''
-    while len(player.current_room.get_exits()) > 0:
-
-    #choose a random available direction to travel in
-        
-        #save the available random directions in a variable
-        random_move = random.choice(player.current_room.get_exits())
-        player.travel(random_move)
-        
-        #add the direction moved in to the "path" array
-        path.append(random_move)
-
-        #add the direction moved in to the "traversal_path" array
-        traversal_path.append(random_move)
-        
-        #store the current room id in a variable
-        current_room_id = player.current_room.id
-        
-        #add the current_room_id to the previous_rooms array
-        previous_rooms.append(current_room_id)
-        
-        #storing the room's current direction (taken from the traversal_path array)
-        curr_dir = traversal_path[-1]
-        
-        # store the previous room's direction that is saved in the traversal_path array
-        if len(traversal_path) > 1:
-            prev_dir = traversal_path[-2]
-        
-        #store the previous room's id
-        if len(previous_rooms) > 1:
-            prev_id = previous_rooms[-2]
-        
-        #update the visited dictionary directions keys with their room id values 
-        if len(visited) > 1:
-            visited[current_room_id][prev_dir] = prev_id
-            visited[prev_id][curr_dir] = current_room_id
-        
-
-        #Checking to see if there are any rooms left unvisited
-        for i in range(len(visited)):
-            for j in visited[i]:
-                if visited[i][j] == '?':
-                    count += 1
-                total = count
-        if total > 0:
-            continue
-        
-        elif total == 0:
-            break
-
-        
+    course = visited[player.current_room.id].pop(0)
+    if getattr(player.current_room, f"{course}_to").id not in visited:
+        backtrack.append(opposite[course])
+        traversal_path.append(course)
+        player.travel(course)
     
-        '''#Can I update here to add the id to the visited array as a value to the direction key? Can I use something else?'''
-        
-        
-        
-        
-        
-        
-        
 
-        '''#Escaping the previous while loop (while there are exits available)...is this indentation correct for escape?''' 
-        #If we are reach a dead-end
-        if len(player.current_room.get_exits()) < 1:
-        #backtrack through the maze by using the "path" route as a stack and switch the direction to opposite
-            
-            #get the route from the "path" array
-            while len(path) > 0:
-                #store the the last element removed from path array in a variable
-                removed = path.pop()
-                #add directions to traversal path array
-                traversal_path.append(removed)
-                # use the backtrack method here by storing in a variable
-                reverse_dir = backtrack(removed)
-                #move in the new opposite direction
-                player.travel(reverse_dir)
-        
-
-        
-
-        
-# TRAVERSAL TEST - DO NOT MODIFY
+# TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
 visited_rooms.add(player.current_room)
-
+print(traversal_path)
 for move in traversal_path:
     player.travel(move)
     visited_rooms.add(player.current_room)
@@ -196,13 +91,10 @@ while True:
         break
     else:
         print("I did not understand that command.")
-        
 
 
-            
 
 
-        
 
 
         
